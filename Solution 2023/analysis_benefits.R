@@ -1,8 +1,6 @@
 library(candisc)
 
-setwd("C:\\Users\\u0010822\\Box Sync\\onderwijs\\multivariate_statistics_2022_2023\\assignment_1")
-
-load("benefits.Rdata")
+load("Solution 2023/benefits.Rdata")
 zbenefits<-benefits
 zbenefits[,2:14]<-scale(benefits[,2:14],center=TRUE,scale=FALSE)
 
@@ -68,10 +66,3 @@ round(cor(train.X2,train.X2)[1:3,1:3],3)
 # canonical loadings first two pairs
 as.matrix(round(cancor.out$structure$X.xscores[,1],3))
 as.matrix(round(cancor.out$structure$Y.yscores[,1],3))
-
-
-
-
-
-
-
