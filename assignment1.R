@@ -11,10 +11,10 @@ return(A/(A+B))
 }
 
 load("ess.Rdata")
+names(ess)[2:14]<-c("sotru1","sotru2","sotru3","truin1","truin2","truin3","truin4",
+                    "webe1","webe2","webe3","webe4","webe5","webe6")
 centered_ess <- ess %>%
   mutate(across(2:14, ~ . - mean(., na.rm = TRUE)))
-names(centered_ess)[2:14]<-c("sotru1","sotru2","sotru3","truin1","truin2","truin3","truin4",
-"webe1","webe2","webe3","webe4","webe5","webe6")
 
 covmat<-cov(centered_ess[-1])
 
@@ -158,6 +158,7 @@ anova(fitmetric1,fitmetric2)
 # Question d: Canonical correlation analysis
 ##################################
 
+load("ess.Rdata")
 zess<- ess
 zess[,2:14]<-scale(ess[,2:14],center=TRUE,scale=FALSE)
 
