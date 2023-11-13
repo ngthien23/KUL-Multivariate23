@@ -13,6 +13,10 @@ return(A/(A+B))
 load("ess.Rdata")
 names(ess)[2:14]<-c("sotru1","sotru2","sotru3","truin1","truin2","truin3","truin4",
                     "webe1","webe2","webe3","webe4","webe5","webe6")
+ess$webe4 <- 5 - ess$webe4
+ess$webe5 <- 5 - ess$webe5
+ess$webe6 <- 5 - ess$webe6
+
 centered_ess <- ess %>%
   mutate(across(2:14, ~ . - mean(., na.rm = TRUE)))
 
@@ -56,7 +60,7 @@ data.frame(factorscore,reliability,average_var_extracted,max_shared_var)
 
 modificationIndices(fitcfa1)
 
-cfa2<-'sotru =~NA*+sotru1+sotru2+sotru3
+cfa2<-'sotru =~NA*sotru1+sotru2+sotru3
        truin =~NA*truin1+truin2+truin3+truin4
        webe  =~NA*webe1+webe2+webe3+webe4+webe5+webe6
        sotru ~~1*sotru
@@ -83,7 +87,7 @@ fitmeasures(fitcfa2,c("chisq","df","pvalue","cfi","tli","rmsea","srmr"))
 # Question c: fit raw data
 ##################################
 
-sem1<-'sotru =~NA*+sotru1+sotru2+sotru3
+sem1<-'sotru =~NA*sotru1+sotru2+sotru3
        truin =~NA*truin1+truin2+truin3+truin4
        webe  =~NA*webe1+webe2+webe3+webe4+webe5+webe6
        sotru ~~1*sotru
@@ -100,7 +104,7 @@ sem1<-'sotru =~NA*+sotru1+sotru2+sotru3
        webe4 ~~ webe5
        webe ~ sotru + truin'
 
-sem2<-'sotru =~NA*+sotru1+sotru2+sotru3
+sem2<-'sotru =~NA*sotru1+sotru2+sotru3
        truin =~NA*truin1+truin2+truin3+truin4
        webe  =~NA*webe1+webe2+webe3+webe4+webe5+webe6
        sotru ~~1*sotru
@@ -147,27 +151,32 @@ rownames(fit)<-c("config1","config2","metric1","metric2")
 round(fit,3)
 
 # Goodness of fit tests
-anova(fitconfig1,fitconfig2)
-anova(fitconfig1,fitmetric1)
-anova(fitconfig1,fitmetric2)
-anova(fitconfig2,fitmetric1)
-anova(fitconfig2,fitmetric2)
-anova(fitmetric1,fitmetric2)
+anova(config1,config2)
+anova(config1,metric1)
+anova(config1,metric2)
+anova(config2,metric1)
+anova(config2,metric2)
+anova(metric1,metric2)
 
 ##################################
 # Question d: Canonical correlation analysis
 ##################################
 
 load("ess.Rdata")
-zess<- ess
-zess[,2:14]<-scale(ess[,2:14],center=TRUE,scale=FALSE)
+sess<- ess
+#ess$wrhpp <- 5 - ess$wrhpp
+#ess$enjlf <- 5 - ess$enjlf
+#ess$fltpcfl <- 5 - ess$fltpcfl
+
+sess[,2:14]<-scale(ess[,2:14],center=TRUE,scale=FALSE)
 
 cancor.out<-cancor(cbind(fltdpr, fltsd, fltanx, wrhpp, enjlf, fltpcfl)
-~ppltrst+ pplfair+ pplhlp+ trstprl+ trstlgl+ trstplc+ trstplt, data=zess)
+~ppltrst+ pplfair+ pplhlp+ trstprl+ trstlgl+ trstplc+ trstplt, data=sess)
 summary(cancor.out)
 
 #redundancies
 redu<-redundancy(cancor.out)
+round(redu$Xcan,3)
 round(redu$Ycan,3)
 
 #computation redundancies from output
@@ -175,6 +184,13 @@ R2tu<-cancor.out$cancor^2
 VAFYbyt<-apply(cancor.out$structure$Y.yscores^2,2,sum)/4
 redund<-R2tu*VAFYbyt
 round(cbind(R2tu,VAFYbyt,redund,total=cumsum(redund)),3)
+
+#plot 
+plot(-5,-5,xlim=c(-2,4),ylim=c(-2,4),xlab="u1",ylab="t1")
+points(cancor.out$scores$X[sess$cntry=="FR",1],cancor.out$scores$Y[sess$cntry=="FR",1],col="red")
+#cancor.sess$scores$X[sess$cntry=="FR",1]---b times X variables when country is FR, which is u1
+points(cancor.out$scores$X[sess$cntry=="GB",1],cancor.out$scores$Y[sess$cntry=="GB",1],col="blue")
+legend("topleft",c("FR","GB"),col=c("red","blue"),pch=c(1,1))
 
 ##################################
 # Question e: split-half approach to assess the validity
@@ -191,16 +207,16 @@ cancor.train<-cancor(cbind(fltdpr, fltsd, fltanx, wrhpp, enjlf, fltpcfl)
 ~ppltrst+ pplfair+ pplhlp+ trstprl+ trstlgl+ trstplc+ trstplt, data=train)
 #summary(cancor.train)
 
-#round(cancor.train$structure$X.xscores,3)
-#round(cancor.train$structure$Y.yscores,3)
+round(cancor.train$structure$X.xscores,3)
+round(cancor.train$structure$Y.yscores,3)
 
 #conduct CCA on validation data
 cancor.valid<-cancor(cbind(fltdpr, fltsd, fltanx, wrhpp, enjlf, fltpcfl)
 ~ppltrst+ pplfair+ pplhlp+ trstprl+ trstlgl+ trstplc+ trstplt, data=valid)
 
 #summary(cancor.valid)
-#round(cancor.valid$structure$X.xscores,3)
-#round(cancor.valid$structure$Y.yscores,3)
+round(cancor.valid$structure$X.xscores,3)
+round(cancor.valid$structure$Y.yscores,3)
 
 # canonical variates calibration set
 train.X1<-cancor.train$score$X
@@ -211,17 +227,17 @@ train.X2<-as.matrix(train[,1:7])%*%cancor.valid$coef$X
 train.Y2<-as.matrix(train[,8:13])%*%cancor.valid$coef$Y
 
 
-#R(T,T*) and R(U,U*)
-round(cor(train.Y1,train.Y2)[1:3,1:3],3)
-round(cor(train.X1,train.X2)[1:3,1:3],3)
+#R(T,T*) and R(U,U*) for t1,t2,u1,u2
+round(cor(train.Y1,train.Y2)[1:2,1:2],3)
+round(cor(train.X1,train.X2)[1:2,1:2],3)
 
 #R(U,T) and R(U*,T*)
-round(cor(train.X1,train.Y1)[1:3,1:3],3)
-round(cor(train.X2,train.Y2)[1:3,1:3],3)
+round(cor(train.X1,train.Y1)[1:2,1:2],3)
+round(cor(train.X2,train.Y2)[1:2,1:2],3)
 
 #R(T*,T*) and R(U*,U*)
-round(cor(train.Y2,train.Y2)[1:3,1:3],3)
-round(cor(train.X2,train.X2)[1:3,1:3],3)
+round(cor(train.Y2,train.Y2)[1:2,1:2],3)
+round(cor(train.X2,train.X2)[1:2,1:2],3)
 
 ##################################
 # Question f: Which pairs of canonical variates are both important and reliable?
