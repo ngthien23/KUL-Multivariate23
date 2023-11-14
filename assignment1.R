@@ -13,9 +13,6 @@ return(A/(A+B))
 load("ess.Rdata")
 names(ess)[2:14]<-c("sotru1","sotru2","sotru3","truin1","truin2","truin3","truin4",
                     "webe1","webe2","webe3","webe4","webe5","webe6")
-ess$webe4 <- 5 - ess$webe4
-ess$webe5 <- 5 - ess$webe5
-ess$webe6 <- 5 - ess$webe6
 
 centered_ess <- ess %>%
   mutate(across(2:14, ~ . - mean(., na.rm = TRUE)))
@@ -82,6 +79,17 @@ fitcfa2<-cfa(cfa2,sample.cov=covmat,sample.nobs=4046)
 
 #fit measures
 fitmeasures(fitcfa2,c("chisq","df","pvalue","cfi","tli","rmsea","srmr"))
+d<-standardizedSolution(fitcfa2)
+d
+
+factorscore<-c("sotru","truin","webe")
+#composite reliability
+reliability<-round(c(compositerel(d[1:3,4]),compositerel(d[4:6,4]),compositerel(d[7:9,4])),3)
+#average variance extracted
+average_var_extracted<-round(c(mean(d[1:3,4]^2),mean(d[4:6,4]^2),mean(d[7:9,4]^2)),3)
+#maximum shared variance
+max_shared_var<-round(c(max(d[c(22,23),4]^2),max(d[c(22,24),4]^2),max(d[c(23,24),4]^2)),3)
+data.frame(factorscore,reliability,average_var_extracted,max_shared_var)
 
 ##################################
 # Question c: fit raw data
@@ -164,9 +172,6 @@ anova(metric1,metric2)
 
 load("ess.Rdata")
 sess<- ess
-#ess$wrhpp <- 5 - ess$wrhpp
-#ess$enjlf <- 5 - ess$enjlf
-#ess$fltpcfl <- 5 - ess$fltpcfl
 
 sess[,2:14]<-scale(ess[,2:14],center=TRUE,scale=FALSE)
 
