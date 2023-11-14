@@ -43,11 +43,11 @@ d
 
 factorscore<-c("sotru","truin","webe")
 #composite reliability
-reliability<-round(c(compositerel(d[1:3,4]),compositerel(d[4:6,4]),compositerel(d[7:9,4])),3)
+reliability<-round(c(compositerel(d[1:3,4]),compositerel(d[4:7,4]),compositerel(d[8:13,4])),3)
 #average variance extracted
-average_var_extracted<-round(c(mean(d[1:3,4]^2),mean(d[4:6,4]^2),mean(d[7:9,4]^2)),3)
+average_var_extracted<-round(c(mean(d[1:3,4]^2),mean(d[4:7,4]^2),mean(d[8:13,4]^2)),3)
 #maximum shared variance
-max_shared_var<-round(c(max(d[c(22,23),4]^2),max(d[c(22,24),4]^2),max(d[c(23,24),4]^2)),3)
+max_shared_var<-round(c(max(d[c(30,31),4]^2),max(d[c(30,32),4]^2),max(d[c(31,32),4]^2)),3)
 data.frame(factorscore,reliability,average_var_extracted,max_shared_var)
 
 ##################################
@@ -84,11 +84,11 @@ d
 
 factorscore<-c("sotru","truin","webe")
 #composite reliability
-reliability<-round(c(compositerel(d[1:3,4]),compositerel(d[4:6,4]),compositerel(d[7:9,4])),3)
+reliability<-round(c(compositerel(d[1:3,4]),compositerel(d[4:7,4]),compositerel(d[8:13,4])),3)
 #average variance extracted
-average_var_extracted<-round(c(mean(d[1:3,4]^2),mean(d[4:6,4]^2),mean(d[7:9,4]^2)),3)
+average_var_extracted<-round(c(mean(d[1:3,4]^2),mean(d[4:7,4]^2),mean(d[8:13,4]^2)),3)
 #maximum shared variance
-max_shared_var<-round(c(max(d[c(22,23),4]^2),max(d[c(22,24),4]^2),max(d[c(23,24),4]^2)),3)
+max_shared_var<-round(c(max(d[c(39,40),4]^2),max(d[c(39,41),4]^2),max(d[c(40,41),4]^2)),3)
 data.frame(factorscore,reliability,average_var_extracted,max_shared_var)
 
 ##################################
