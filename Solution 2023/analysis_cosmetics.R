@@ -10,7 +10,7 @@ return(A/(A+B))
 }
 
 
-load("2022/Assignment 1/cosmetics.Rdata")
+load("cosmetics.Rdata")
 names(cosmetics)[1:9]<-c("Att_organic1","Att_organic2","Att_organic3","Att_packaging1","Att_packaging2","Att_packaging3",
 "Att_crueltyfree1","Att_crueltyfree2","Att_crueltyfree3")
 
@@ -41,6 +41,7 @@ fitmeasures(fitcfa1,c("chisq","df","pvalue","cfi","tli","rmsea","srmr"))
 standardizedSolution(fitcfa1)
 
 d<-standardizedSolution(fitcfa1)
+d[1:3,4]
 factorscore<-c("organic","packaging","crueltyfree")
 #composite reliability
 reliability<-round(c(compositerel(d[1:3,4]),compositerel(d[4:6,4]),compositerel(d[7:9,4])),3)
