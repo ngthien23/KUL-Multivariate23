@@ -1,8 +1,7 @@
-install.packages("plfm")
+#install.packages("plfm")
+#help(anger)
+#head(anger)
 library(plfm)
-help(anger)
-head(anger)
-
 #a.
 
 # anger data is a 3D array
@@ -14,7 +13,7 @@ dim(person_behavior_aggregated)
 # We have 101 persons and 8 behaviors, the result is a 101 x 8 matrix
 
 # compute squared Euclidean distances
-help(dist)
+#help(dist)
 EuclideanDistance <- dist(person_behavior_aggregated, method = "euclidean", 
                          diag = TRUE, upper = TRUE)
 
@@ -68,7 +67,7 @@ final_freq1 <- rbind(anger$freq1, profile_vectors)
 
 
 #c
-install.packages("ca")
+#install.packages("ca")
 library(ca)
 
 #H0: bahabior and situations are statistically independent
