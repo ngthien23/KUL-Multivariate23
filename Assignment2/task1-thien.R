@@ -61,7 +61,6 @@ knnbest <- function(knn) {
 rferror <- function(train.data, train.target, test.data, test.target, mtry, ntree) {
   rfdata<-data.frame(train.target=factor(train.target),train.data)
   bag.mod=randomForest(train.target~.,data=rfdata,mtry=mtry,ntree=ntree,importance=TRUE)
-  bag.mod
   predrf.train<-predict(bag.mod,newdata=rfdata)
   train<-errorrate(rfdata$train.target,predrf.train)
   predrf.test<-predict(bag.mod,newdata=test.data)
