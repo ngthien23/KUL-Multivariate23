@@ -15,12 +15,6 @@ errorrate <- function(observed, predicted) {
   return(errorrate)
 }
 
-#Calculate error rate from table
-errorrate.table <- function(tab) {
-  errorrate<-1-sum(diag(tab))/sum(tab)
-  return(errorrate)
-}
-
 #Calculate error rate from model ouput, training and test data
 model <- function(model.out, train.data, train.target, test.data, test.target) {
   pred.train <- predict(model.out, train.data)
@@ -54,7 +48,7 @@ plotknn <- function(knn, kmax) {
 #Find the best k for knn, not taking k=1 into account
 knnbest <- function(knn) {
   best <- which(knn1[,2] == sort(unique(knn1[,2]))[2])
-  return(best = best)
+  return(best)
 }
 
 #Calculate error rate for random forest
@@ -77,6 +71,7 @@ hddaerror <- function(train.data, train.target, test.data, test.target, model, d
   test<-errorrate(test.target,predhdda.test$class)
   return(list(train = train, test = test))
 }
+
 
 #Print results
 results <- function() {
