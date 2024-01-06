@@ -8,17 +8,20 @@ library(HDclassif)
 
 set.seed(8517)
 
+#Calculate error rate from observed and predicted
 errorrate <- function(observed, predicted) {
   tab<-table(observed, predicted)
   errorrate<-1-sum(diag(tab))/sum(tab)
   return(errorrate)
 }
 
+#Calculate error rate from table
 errorrate.table <- function(tab) {
   errorrate<-1-sum(diag(tab))/sum(tab)
   return(errorrate)
 }
 
+#Calculate error rate from model ouput, training and test data
 model <- function(model.out, train.data, train.target, test.data, test.target) {
   pred.train <- predict(model.out, train.data)
   pred.test <- predict(model.out, test.data)
@@ -27,6 +30,7 @@ model <- function(model.out, train.data, train.target, test.data, test.target) {
   return(list(train = train, test = test))
 }
 
+#Tune k for KNN
 tuneknn <- function(train.data, train.target, test.data, test.target, kmax) {
   knn<-matrix(rep(0,kmax*2),nrow=kmax)
   for (j in 1:kmax){
@@ -39,6 +43,7 @@ tuneknn <- function(train.data, train.target, test.data, test.target, kmax) {
   return(knn)
 }
 
+#Plot KNN as a function of k
 plotknn <- function(knn, kmax) {
   plot(-10,-10,xlim=c(1,kmax),ylim=c(0,0.15),col="red",type="b",xlab="K",ylab="error")
   lines(c(1:kmax),knn[,1],col="red")
@@ -46,6 +51,13 @@ plotknn <- function(knn, kmax) {
   legend("topright",c("training error", "test error"),col=c("red","blue"),lty=c(1,1))
 }
 
+#Find the best k for knn, not taking k=1 into account
+knnbest <- function(knn) {
+  best <- which(knn1[,2] == sort(unique(knn1[,2]))[2])
+  return(best = best)
+}
+
+#Calculate error rate for random forest
 rferror <- function(train.data, train.target, test.data, test.target, mtry, ntree) {
   rfdata<-data.frame(train.target=factor(train.target),train.data)
   bag.mod=randomForest(train.target~.,data=rfdata,mtry=mtry,ntree=ntree,importance=TRUE)
@@ -57,6 +69,7 @@ rferror <- function(train.data, train.target, test.data, test.target, mtry, ntre
   return(list(train = train, test = test))
 }
 
+#Calculate error rate for HDDA
 hddaerror <- function(train.data, train.target, test.data, test.target, model, d_select, threshold) {
   hdda.out <- hdda(train.data, train.target, model=model, d_select = d_select, threshold = threshold)
   predhdda.train <- predict(hdda.out, train.data, train.target)
@@ -66,15 +79,19 @@ hddaerror <- function(train.data, train.target, test.data, test.target, model, d
   return(list(train = train, test = test))
 }
 
+#Print results
 results <- function() {
+  knn1best <- knnbest(knn1)
+  knn2best <- knnbest(knn2)
+  
   train_errors <- c(lda1$train, lda2$train, 
                     qda1$train, qda2$train, 
-                    knn1[which.min(knn1[,2])], knn2[which.min(knn2[,2])], 
+                    knn1[knn1best,1], knn2[knn2best,1], 
                     rf1$train, rf2$train, 
                     hdda1$train, hdda2$train)
   test_errors <- c(lda1$test, lda2$test, 
                   qda1$test, qda2$tes, 
-                  min(knn1[,2]), min(knn2[,2]), 
+                  knn1[knn1best,2], knn2[knn2best,2], 
                   rf1$test, rf2$test, 
                   hdda1$test, hdda2$test)
   row_names <- c("LDA1", "LDA2", 
@@ -86,6 +103,15 @@ results <- function() {
   results <- data.frame(train = train_errors, test = test_errors)
   rownames(results) <- row_names
   print(results)
+  print("The best KNN1 has k = ")
+  print(knn1best)
+  print("The best KNN2 has k = ")
+  print(knn2best)
+  print("The best model is: ")
+  print(rownames(results.out)[which.min(results.out$test)])
+  barplot(t(results), beside = TRUE, col = c("red", "blue"), legend.text = TRUE,
+          main = "Model Performance on Training and Test Sets",
+          xlab = "Models", ylab = "Error rate", ylim = c(0, 0.15))
   return(results)
 }
 
@@ -155,4 +181,3 @@ hdda2<-hddaerror(traindata, train.target, testdata, test.target, model="AKJBQKD"
 
 #c)
 results.out<-results()
-rownames(results.out)[which.min(results.out$test)]

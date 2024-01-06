@@ -7,31 +7,27 @@ library(plfm)
 # anger data is a 3D array
 # Aggregate across situations (the second dimension is for situations)
 person_behavior_aggregated <- apply(anger$data, MARGIN =3, FUN = rowSums)
-
-# Check the dimensions of the aggregated matrix
 dim(person_behavior_aggregated)
 # We have 101 persons and 8 behaviors, the result is a 101 x 8 matrix
-
-# compute squared Euclidean distances
-#help(dist)
+ 
 EuclideanDistance <- dist(person_behavior_aggregated, method = "euclidean", 
-                         diag = TRUE, upper = TRUE)
-
-SquaredEuclideanDistance <- EuclideanDistance^2
-#should i use square here????????
-
-#SquaredEuclideanDistance 
-
-# hierarchical clustering Ward bimodal data 
-# cluster on squared Euclidean distance 
-hiclust_ward<- hclust(SquaredEuclideanDistance, "ward.D2") 
+                         diag = TRUE, upper = TRUE) 
+# hierarchical clustering Ward bimodal data on squared Euclidean distance 
+hiclust_ward<- hclust(EuclideanDistance, "ward.D2") 
 par(pty="s") 
 plot(hiclust_ward,hang=-1) 
-#Ward’s method fails to capture the difference in the true modality of the two samples. 
-
+ 
 #Save the cluster membership variable of the 2-cluster solution
-clusters <- cutree(hiclust_ward, k = 2)
-clusters
+clusters <- cutree(hiclust_ward, k = 1:5)
+nclust <- 2
+ 
+#centroid
+stat<-describeBy(person_behavior_aggregated, clusters, mat=TRUE)
+hcenter <- matrix(stat[,5],nrow=nclust)
+rownames(hcenter) <- paste("c_",rep(1:nclust),sep="")
+colnames(hcenter) <- c(colnames(anger$freq2))
+round(hcenter,2)
+
 
 
 #b.
